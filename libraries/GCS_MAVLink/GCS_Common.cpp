@@ -3008,9 +3008,14 @@ void GCS_MAVLINK::send_heartbeat() const
 
 void GCS_MAVLINK::send_radio_signal() const
 {
+
     float rate = 433.2;
     int16_t heading = 60; 
     int16_t level = -80;
+
+    printf("send_radio_signal: rate %f\n", float(rate));
+    printf("send_radio_signal: heading %i\n", heading);
+    printf("send_radio_signal: level %i\n", level);
 
     mavlink_msg_radio_signal_send(
         chan,
@@ -3018,7 +3023,6 @@ void GCS_MAVLINK::send_radio_signal() const
         heading,  
         level
         );
-  //      AP::logger().WriteBlock(&msg,  sizeof(msg));
 }
 
 
