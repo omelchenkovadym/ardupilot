@@ -331,6 +331,7 @@ public:
     void send_mission_current(const class AP_Mission &mission, uint16_t seq);
 
     // common send functions
+    void send_radio_signal(void) const;
     void send_heartbeat(void) const;
     void send_meminfo(void);
     void send_fence_status() const;
@@ -514,6 +515,7 @@ protected:
     // saveable rate of each stream
     AP_Int16        *streamRates;
 
+    void handle_radio_signal(const mavlink_message_t &msg) const;
     void handle_heartbeat(const mavlink_message_t &msg) const;
 
     virtual bool persist_streamrates() const { return false; }

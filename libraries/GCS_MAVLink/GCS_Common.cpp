@@ -990,6 +990,7 @@ ap_message GCS_MAVLINK::mavlink_id_to_ap_message_id(const uint32_t mavlink_id) c
         ap_message msg_id;
     } map[] {
         { MAVLINK_MSG_ID_HEARTBEAT,             MSG_HEARTBEAT},
+        { MAVLINK_MSG_ID_RADIO_SIGNAL,          MSG_RADIO_SIGNAL},
         { MAVLINK_MSG_ID_HOME_POSITION,         MSG_HOME},
         { MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN,     MSG_ORIGIN},
         { MAVLINK_MSG_ID_SYS_STATUS,            MSG_SYS_STATUS},
@@ -3005,6 +3006,22 @@ void GCS_MAVLINK::send_heartbeat() const
         system_status());
 }
 
+void GCS_MAVLINK::send_radio_signal() const
+{
+    float rate = 433.2;
+    int16_t heading = 60; 
+    int16_t level = -80;
+
+    mavlink_msg_radio_signal_send(
+        chan,
+        rate,  
+        heading,  
+        level
+        );
+  //      AP::logger().WriteBlock(&msg,  sizeof(msg));
+}
+
+
 #if AP_RC_CHANNEL_ENABLED
 MAV_RESULT GCS_MAVLINK::handle_command_do_aux_function(const mavlink_command_int_t &packet)
 {
@@ -4052,6 +4069,25 @@ void GCS_MAVLINK::handle_heartbeat(const mavlink_message_t &msg) const
     }
 }
 
+void GCS_MAVLINK::handle_radio_signal(const mavlink_message_t &msg) const
+{
+        mavlink_radio_signal_t packet;
+        mavlink_msg_radio_signal_decode(&msg, &packet);
+        AP::logger().WriteBlock(&msg,  sizeof(msg));
+        printf("handle_radio_signal: %f", float(msg.msgid));
+        hal.console->printf("param set 4 should be processed locally\n");
+        float rate = 433.5;
+        int16_t heading = 80;
+        int16_t level = -65;
+
+        mavlink_msg_radio_signal_send(
+            chan,
+            rate,
+            heading,
+            level
+            );
+}
+
 /*
   handle messages which don't require vehicle specific data
  */
@@ -4059,6 +4095,11 @@ void GCS_MAVLINK::handle_message(const mavlink_message_t &msg)
 {
     switch (msg.msgid) {
 
+    case MAVLINK_MSG_ID_RADIO_SIGNAL: {
+        handle_radio_signal(msg);
+        break;
+    }
+    
     case MAVLINK_MSG_ID_HEARTBEAT: {
         handle_heartbeat(msg);
         break;
@@ -6010,6 +6051,11 @@ bool GCS_MAVLINK::try_send_message(const enum ap_message id)
     case MSG_HWSTATUS:
         CHECK_PAYLOAD_SIZE(HWSTATUS);
         send_hwstatus();
+        break;
+        
+    case MSG_RADIO_SIGNAL:
+        CHECK_PAYLOAD_SIZE(RADIO_SIGNAL);
+        send_radio_signal();
         break;
 
 #if AP_AHRS_ENABLED
