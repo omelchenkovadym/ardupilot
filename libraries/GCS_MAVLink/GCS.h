@@ -486,6 +486,7 @@ public:
     uint16_t get_stream_slowdown_ms() const { return stream_slowdown_ms; }
 
     MAV_RESULT set_message_interval(uint32_t msg_id, int32_t interval_us);
+	mavlink_radio_signal_t radio_signal;
 
 protected:
 

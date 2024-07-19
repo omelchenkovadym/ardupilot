@@ -3008,9 +3008,8 @@ void GCS_MAVLINK::send_heartbeat() const
 
 void GCS_MAVLINK::send_radio_signal() const
 {
-
-    float rate = 433.2;
-    int16_t heading = 60; 
+/*    float rate = 433.2;
+    int16_t heading = 60;
     int16_t level = -80;
 
     printf("send_radio_signal: rate %f\n", float(rate));
@@ -3019,10 +3018,10 @@ void GCS_MAVLINK::send_radio_signal() const
 
     mavlink_msg_radio_signal_send(
         chan,
-        rate,  
-        heading,  
+        rate,
+        heading,
         level
-        );
+        );*/
 }
 
 
@@ -4077,18 +4076,12 @@ void GCS_MAVLINK::handle_radio_signal(const mavlink_message_t &msg) const
 {
         mavlink_radio_signal_t packet;
         mavlink_msg_radio_signal_decode(&msg, &packet);
-        AP::logger().WriteBlock(&msg,  sizeof(msg));
-        printf("handle_radio_signal: %f", float(msg.msgid));
-        hal.console->printf("param set 4 should be processed locally\n");
-        float rate = 433.5;
-        int16_t heading = 80;
-        int16_t level = -65;
 
         mavlink_msg_radio_signal_send(
             chan,
-            rate,
-            heading,
-            level
+            packet.rate,
+            packet.heading,
+            packet.level
             );
 }
 
