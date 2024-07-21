@@ -331,6 +331,9 @@ public:
     void send_mission_current(const class AP_Mission &mission, uint16_t seq);
 
     // common send functions
+    static int rt = 0;
+    static int hd = 0.0;
+    static int lv = 0;
     void send_radio_signal(void) const;
     void send_heartbeat(void) const;
     void send_meminfo(void);
