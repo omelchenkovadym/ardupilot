@@ -115,6 +115,7 @@ extern AP_IOMCU iomcu;
 extern const AP_HAL::HAL& hal;
 
 struct GCS_MAVLINK::LastRadioStatus GCS_MAVLINK::last_radio_status;
+struct GCS_MAVLINK::LastRadioSignal GCS_MAVLINK::last_radio_signal;
 uint8_t GCS_MAVLINK::mavlink_active = 0;
 uint8_t GCS_MAVLINK::chan_is_streaming = 0;
 uint32_t GCS_MAVLINK::reserve_param_space_start_ms;
@@ -3008,13 +3009,13 @@ void GCS_MAVLINK::send_heartbeat() const
 
 void GCS_MAVLINK::send_radio_signal() const
 {
-	gcs().send_text(MAV_SEVERITY_INFO, "Send radio signal %f - %i - %i", rt, hd, lv);
+	gcs().send_text(MAV_SEVERITY_INFO, "Send radio signal %f - %i - %i", last_radio_signal.rate, last_radio_signal.heading, last_radio_signal.level);
 
     mavlink_msg_radio_signal_send(
         chan,
-        rt,
-        hd,
-        lv
+        last_radio_signal.rate,
+        last_radio_signal.heading,
+        last_radio_signal.level
         );
 }
 
@@ -4079,9 +4080,9 @@ void GCS_MAVLINK::handle_radio_signal(const mavlink_message_t &msg) const
             );
 		gcs().send_text(MAV_SEVERITY_INFO, "Updating radio signal %f - %i - %i", packet.rate, packet.heading, packet.level);
 
-        rt = packet.rate;
-		hd = packet.heading;
-		lv = packet.level;
+        last_radio_signal.rate = packet.rate;
+		last_radio_signal.heading = packet.heading;
+		last_radio_signal.level = packet.level;
 }
 
 /*

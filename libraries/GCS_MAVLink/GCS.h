@@ -29,7 +29,7 @@
 #include <AP_Arming/AP_Arming_config.h>
 
 #include "ap_message.h"
-
+#include <map>
 #define GCS_DEBUG_SEND_MESSAGE_TIMINGS 0
 
 // macros used to determine if a message will fit in the space available.
@@ -331,9 +331,6 @@ public:
     void send_mission_current(const class AP_Mission &mission, uint16_t seq);
 
     // common send functions
-    static int rt = 0;
-    static int hd = 0.0;
-    static int lv = 0;
     void send_radio_signal(void) const;
     void send_heartbeat(void) const;
     void send_meminfo(void);
@@ -771,6 +768,12 @@ private:
     mavlink_status_t _channel_status;
 
     const AP_SerialManager::UARTState *uartstate;
+
+	static struct LastRadioSignal {
+         float rate;
+         int16_t heading;
+         int16_t level;
+    } last_radio_signal;
 
     // last time we got a non-zero RSSI from RADIO_STATUS
     static struct LastRadioStatus {
